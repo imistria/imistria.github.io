@@ -159,6 +159,20 @@
   .output[data-writer="c"]{font-family:'Gloria Hallelujah','Comic Sans MS',cursive;font-size:clamp(1.2rem,2.6vw,1.6rem)}
   .output.swapping{opacity:0}
 
+  /* ---- trajectory strokes ---- */
+  .traj-stroke {
+    animation: drawStroke 0.6s cubic-bezier(.42,0,.35,1) forwards;
+  }
+  @keyframes drawStroke {
+    to { stroke-dashoffset: 0; }
+  }
+  @keyframes dotpop {
+    to { opacity: 1; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .traj-stroke { stroke-dashoffset: 0 !important; animation: none !important; }
+  }
+
   /* ---- reveal ---- */
   .fade{opacity:0;transform:translateY(22px);transition:opacity .8s ease,transform .8s cubic-bezier(.2,.7,.3,1)}
   .revealed.fade,.revealed .fade{opacity:1;transform:none}
@@ -225,37 +239,116 @@
     </div>
     <div class="paper fade">
       <p class="scan">
-        <span class="w" style="--i:0">Tuesday</span> <span class="w" style="--i:1">morning</span> —
-        <span class="w" style="--i:2">remember</span> <span class="w" style="--i:3">to</span>
-        <span class="w" style="--i:4">bring</span> <span class="w" style="--i:5">the</span>
-        <span class="w" style="--i:6">blue</span> <span class="w" style="--i:7">notebook</span>
-        <span class="w" style="--i:8">back</span> <span class="w" style="--i:9">to</span>
-        <span class="w" style="--i:10">Marta</span>
+        <span class="w" style="--i:0">Dear</span> <span class="w" style="--i:1">Marta,</span>
+        <span class="w" style="--i:2">I</span> <span class="w" style="--i:3">left</span>
+        <span class="w" style="--i:4">the</span> <span class="w" style="--i:5">blue</span>
+        <span class="w" style="--i:6">notebook</span> <span class="w" style="--i:7">on</span>
+        <span class="w" style="--i:8">your</span> <span class="w" style="--i:9">desk</span>
+        <span class="w" style="--i:10">—</span> <span class="w" style="--i:11">see</span>
+        <span class="w" style="--i:12">you</span> <span class="w" style="--i:13">Tuesday</span>
+        <span class="w" style="--i:14">morning.</span>
       </p>
     </div>
-    <p class="caption">Placeholder — swap for a real scan with detector output</p>
+    <p class="caption">Each word located and isolated before recognition begins</p>
   </section>
 
   <section class="stage" id="stage-2">
     <div class="stage-head fade">
       <p class="eyebrow">02 <span class="arrow">/</span> words → strokes</p>
       <h2>Then, recover how they were written.</h2>
-      <p class="lede">The ink is the residue. We predict the pen path that produced it — every stroke ordered, timed and directed.</p>
+      <p class="lede">A finished letter is a trace — what remains after the pen has moved on. We work backwards from that trace to reconstruct the full journey: the order strokes were laid down, the direction the pen traveled, and the rhythm of the hand that held it.</p>
     </div>
-    <div class="paper fade">
-      <svg class="trace" viewBox="0 0 700 190" role="img" aria-label="A handwritten word with its recovered pen trajectory drawn over it">
-        <path id="traj" class="ghost"
-          d="M40,140 C40,80 52,30 68,34 C84,38 74,92 56,124 C44,146 58,158 76,144 C90,133 96,110 108,108 C122,106 122,132 136,140 C150,148 166,136 172,116 C178,96 164,84 152,94 C140,104 146,132 166,142 C186,152 210,138 218,112 C224,92 214,80 202,88 C190,96 196,128 218,140 C238,151 262,140 272,118 C280,100 268,88 256,96 C244,104 252,134 274,143 C296,152 320,138 330,112 C338,90 326,80 314,90 C302,100 312,132 336,142 C360,152 386,134 396,104 C404,80 392,72 380,82 C368,92 380,130 406,141 C430,151 456,132 466,104 C474,82 462,72 450,84 C438,96 450,132 476,142 C500,151 524,134 536,108 C546,86 534,76 522,86 C510,96 522,132 548,142 C572,151 598,132 612,100 C622,76 640,44 656,48"/>
-        <path class="pen"
-          d="M40,140 C40,80 52,30 68,34 C84,38 74,92 56,124 C44,146 58,158 76,144 C90,133 96,110 108,108 C122,106 122,132 136,140 C150,148 166,136 172,116 C178,96 164,84 152,94 C140,104 146,132 166,142 C186,152 210,138 218,112 C224,92 214,80 202,88 C190,96 196,128 218,140 C238,151 262,140 272,118 C280,100 268,88 256,96 C244,104 252,134 274,143 C296,152 320,138 330,112 C338,90 326,80 314,90 C302,100 312,132 336,142 C360,152 386,134 396,104 C404,80 392,72 380,82 C368,92 380,130 406,141 C430,151 456,132 466,104 C474,82 462,72 450,84 C438,96 450,132 476,142 C500,151 524,134 536,108 C546,86 534,76 522,86 C510,96 522,132 548,142 C572,151 598,132 612,100 C622,76 640,44 656,48"/>
-        <circle class="nib" r="5">
-          <animateMotion id="nibMove" dur="2.6s" begin="indefinite" fill="freeze" rotate="auto">
-            <mpath href="#traj"/>
-          </animateMotion>
-        </circle>
+    <div class="paper fade" style="background:#1a1a1a;border-radius:6px;padding:clamp(20px,3vw,36px);">
+      <svg id="trajSvg" viewBox="0 0 660 160" style="width:100%;height:auto;display:block;" role="img" aria-label="Handwritten word 'imistria' with stroke-by-stroke trajectory overlaid in colour">
+
+        <!-- Dark background strip -->
+        <rect x="0" y="20" width="660" height="120" rx="4" fill="#111"/>
+
+        <!-- Ghost ink (grey underlay — the raw handwriting) -->
+        <!-- i -->
+        <path fill="none" stroke="#555" stroke-width="9" stroke-linecap="round" d="M46,58 C46,72 46,90 46,108"/>
+        <circle cx="46" cy="48" r="5" fill="#555"/>
+        <!-- m -->
+        <path fill="none" stroke="#555" stroke-width="9" stroke-linecap="round" d="M62,108 C62,80 62,62 80,62 C98,62 98,80 98,108 C98,80 98,62 116,62 C134,62 134,80 134,108"/>
+        <!-- i -->
+        <path fill="none" stroke="#555" stroke-width="9" stroke-linecap="round" d="M150,62 C150,80 150,95 150,108"/>
+        <circle cx="150" cy="52" r="5" fill="#555"/>
+        <!-- s -->
+        <path fill="none" stroke="#555" stroke-width="9" stroke-linecap="round" d="M178,72 C170,62 162,62 162,72 C162,82 178,84 178,94 C178,108 162,108 154,98"/>
+        <!-- t -->
+        <path fill="none" stroke="#555" stroke-width="9" stroke-linecap="round" d="M194,46 C194,62 194,90 194,108"/>
+        <path fill="none" stroke="#555" stroke-width="9" stroke-linecap="round" d="M182,70 L208,70"/>
+        <!-- r -->
+        <path fill="none" stroke="#555" stroke-width="9" stroke-linecap="round" d="M216,108 C216,85 216,68 216,62 C224,62 234,64 238,74"/>
+        <!-- i -->
+        <path fill="none" stroke="#555" stroke-width="9" stroke-linecap="round" d="M252,62 C252,80 252,95 252,108"/>
+        <circle cx="252" cy="52" r="5" fill="#555"/>
+        <!-- a -->
+        <path fill="none" stroke="#555" stroke-width="9" stroke-linecap="round" d="M286,80 C286,66 274,62 268,68 C260,76 260,100 268,106 C276,112 286,106 286,108 C286,110 286,112 284,116"/>
+
+        <!-- Coloured stroke overlays — each stroke a different hue -->
+        <!-- i stroke 1 (stem) -->
+        <path class="traj-stroke" fill="none" stroke="#e05c5c" stroke-width="2.8" stroke-linecap="round"
+          stroke-dasharray="60" stroke-dashoffset="60"
+          d="M46,58 C46,72 46,90 46,108" style="animation-delay:0.0s"/>
+        <!-- i dot -->
+        <circle cx="46" cy="48" r="4" fill="#e05c5c" opacity="0" style="animation:dotpop 0.2s 0.5s forwards"/>
+
+        <!-- m -->
+        <path class="traj-stroke" fill="none" stroke="#e09a3a" stroke-width="2.8" stroke-linecap="round"
+          stroke-dasharray="180" stroke-dashoffset="180"
+          d="M62,108 C62,80 62,62 80,62 C98,62 98,80 98,108 C98,80 98,62 116,62 C134,62 134,80 134,108" style="animation-delay:0.4s"/>
+
+        <!-- i2 stem -->
+        <path class="traj-stroke" fill="none" stroke="#d4c84a" stroke-width="2.8" stroke-linecap="round"
+          stroke-dasharray="60" stroke-dashoffset="60"
+          d="M150,62 C150,80 150,95 150,108" style="animation-delay:1.0s"/>
+        <circle cx="150" cy="52" r="4" fill="#d4c84a" opacity="0" style="animation:dotpop 0.2s 1.5s forwards"/>
+
+        <!-- s -->
+        <path class="traj-stroke" fill="none" stroke="#5bbf6e" stroke-width="2.8" stroke-linecap="round"
+          stroke-dasharray="120" stroke-dashoffset="120"
+          d="M178,72 C170,62 162,62 162,72 C162,82 178,84 178,94 C178,108 162,108 154,98" style="animation-delay:1.4s"/>
+
+        <!-- t stem -->
+        <path class="traj-stroke" fill="none" stroke="#4ab8c4" stroke-width="2.8" stroke-linecap="round"
+          stroke-dasharray="80" stroke-dashoffset="80"
+          d="M194,46 C194,62 194,90 194,108" style="animation-delay:1.9s"/>
+        <!-- t crossbar -->
+        <path class="traj-stroke" fill="none" stroke="#4ab8c4" stroke-width="2.8" stroke-linecap="round"
+          stroke-dasharray="30" stroke-dashoffset="30"
+          d="M182,70 L208,70" style="animation-delay:2.3s"/>
+
+        <!-- r -->
+        <path class="traj-stroke" fill="none" stroke="#7b6cf6" stroke-width="2.8" stroke-linecap="round"
+          stroke-dasharray="90" stroke-dashoffset="90"
+          d="M216,108 C216,85 216,68 216,62 C224,62 234,64 238,74" style="animation-delay:2.6s"/>
+
+        <!-- i3 stem -->
+        <path class="traj-stroke" fill="none" stroke="#d46be0" stroke-width="2.8" stroke-linecap="round"
+          stroke-dasharray="60" stroke-dashoffset="60"
+          d="M252,62 C252,80 252,95 252,108" style="animation-delay:3.0s"/>
+        <circle cx="252" cy="52" r="4" fill="#d46be0" opacity="0" style="animation:dotpop 0.2s 3.5s forwards"/>
+
+        <!-- a -->
+        <path class="traj-stroke" fill="none" stroke="#e05c8a" stroke-width="2.8" stroke-linecap="round"
+          stroke-dasharray="140" stroke-dashoffset="140"
+          d="M286,80 C286,66 274,62 268,68 C260,76 260,100 268,106 C276,112 286,106 286,108 C286,110 286,112 284,116" style="animation-delay:3.4s"/>
+
+        <!-- stroke order legend -->
+        <text x="330" y="76" font-family="monospace" font-size="10" fill="#666">stroke order</text>
+        <text x="330" y="92" font-family="monospace" font-size="9" fill="#e05c5c">① i</text>
+        <text x="370" y="92" font-family="monospace" font-size="9" fill="#e09a3a">② m</text>
+        <text x="410" y="92" font-family="monospace" font-size="9" fill="#d4c84a">③ i</text>
+        <text x="450" y="92" font-family="monospace" font-size="9" fill="#5bbf6e">④ s</text>
+        <text x="490" y="92" font-family="monospace" font-size="9" fill="#4ab8c4">⑤ t</text>
+        <text x="530" y="92" font-family="monospace" font-size="9" fill="#7b6cf6">⑥ r</text>
+        <text x="570" y="92" font-family="monospace" font-size="9" fill="#d46be0">⑦ i</text>
+        <text x="610" y="92" font-family="monospace" font-size="9" fill="#e05c8a">⑧ a</text>
+
       </svg>
     </div>
-    <p class="caption">Gold path = predicted trajectory · grey = source ink</p>
+    <p class="caption">Each colour = one stroke · drawn in the order and direction the pen moved</p>
   </section>
 
   <section class="stage" id="stage-3">
