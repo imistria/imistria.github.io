@@ -121,52 +121,73 @@
 </div>
 
 <script>
-  // ---------------------------------------------------------------
-  // Paste your form endpoint here to start collecting real responses.
-  // Formspree:  https://formspree.io/f/xxxxxxx
-  // Until this is set, submissions are NOT saved anywhere.
-  const ENDPOINT = "";
-  // ---------------------------------------------------------------
+  /* =====================================================================
+     GOOGLE FORM CONNECTION — fill in these four values.
+
+     1. FORM_ID  — from your form's live URL:
+        https://docs.google.com/forms/d/e/<THIS_PART>/viewform
+
+     2. ENTRY ids — in the Google Forms editor open the ⋮ menu →
+        "Get pre-filled link", type a dummy answer in each field, press
+        "Get link" and copy it. The copied URL contains the ids, e.g.
+        ...&entry.1234567890=Sidra&entry.987654321=CSUSM&entry.5555=a@b.com
+        Match them to the fields in the same order below.
+     ===================================================================== */
+  const FORM_ID = "1FAIpQLSfzgfMul2K1bUZ981Cnmy6zUo-X5-lRfHT3nbNropAbDzxiGg";
+  const ENTRY = {
+    name:        "entry.1480215537",
+    affiliation: "entry.1069577185",
+    email:       "entry.358401377"
+  };
+  /* ===================================================================== */
 
   const $ = id => document.getElementById(id);
   const err = $('err');
+  const btn = $('submit');
 
-  $('submit').addEventListener('click', async () => {
-    const name = $('fullname').value.trim();
-    const aff = $('affiliation').value.trim();
+  function fail(msg, focus) {
+    err.textContent = msg;
+    if (focus) $(focus).focus();
+  }
+
+  btn.addEventListener('click', async () => {
+    const name  = $('fullname').value.trim();
+    const aff   = $('affiliation').value.trim();
     const email = $('email').value.trim();
     err.textContent = '';
 
-    if (!name) { err.textContent = 'Please enter your name.'; $('fullname').focus(); return; }
-    if (!aff) { err.textContent = 'Please enter your affiliation.'; $('affiliation').focus(); return; }
-    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
-      err.textContent = 'Please enter a valid email address.'; $('email').focus(); return;
+    if (!name) return fail('Please enter your name.', 'fullname');
+    if (!aff)  return fail('Please enter your affiliation.', 'affiliation');
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email))
+      return fail('Please enter a valid email address.', 'email');
+
+    if (!FORM_ID || ENTRY.name.endsWith("0000000000")) {
+      console.warn('Google Form not configured — nothing was saved.', {name, aff, email});
+      return fail('Form is not connected yet — nothing was saved.');
     }
 
-    const btn = $('submit');
     btn.disabled = true;
     btn.textContent = 'Sending…';
 
-    if (!ENDPOINT) {
-      console.warn('No ENDPOINT set — this submission was not saved.', {name, aff, email});
-      err.textContent = 'Form is not connected to a backend yet — nothing was saved.';
-      btn.disabled = false;
-      btn.textContent = 'Request early access';
-      return;
-    }
+    const body = new URLSearchParams();
+    body.append(ENTRY.name, name);
+    body.append(ENTRY.affiliation, aff);
+    body.append(ENTRY.email, email);
 
     try {
-      const res = await fetch(ENDPOINT, {
+      // Google blocks cross-origin reads, so the response is opaque:
+      // we can send successfully but cannot inspect the result.
+      await fetch(`https://docs.google.com/forms/d/e/${FORM_ID}/formResponse`, {
         method: 'POST',
-        headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
-        body: JSON.stringify({name, affiliation: aff, email})
+        mode: 'no-cors',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: body.toString()
       });
-      if (!res.ok) throw new Error('bad status ' + res.status);
       $('form').style.display = 'none';
       $('done').style.display = 'block';
     } catch (e) {
       console.error(e);
-      err.textContent = "Something went wrong. Please email us instead.";
+      fail('Something went wrong. Please try again.');
       btn.disabled = false;
       btn.textContent = 'Request early access';
     }
