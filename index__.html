@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Imistria — Early Access</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink:     #0D0D0F;
+    --surface: #F7F6F2;
+    --card:    #FFFFFF;
+    --accent:  #5B4BF5;
+    --muted:   #6B6B78;
+    --border:  #E2E1DC;
+    --success: #16A34A;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--surface);
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+  }
+
+  .wrapper { width: 100%; max-width: 500px; }
+
+  .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 2rem; }
+  .brand-mark {
+    width: 38px; height: 38px;
+    background: var(--accent);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .brand-mark svg { width: 20px; height: 20px; fill: white; }
+  .brand-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.3rem;
+    letter-spacing: -0.02em;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 2.2rem 2rem;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+  }
+
+  .tag {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: #EDE9FE;
+    padding: 4px 10px;
+    border-radius: 99px;
+    margin-bottom: 1rem;
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.7rem;
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: -0.03em;
+    margin-bottom: 0.5rem;
+  }
+
+  .subtitle {
+    font-size: 0.9rem;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 1.8rem;
+  }
+
+  .field { margin-bottom: 1.1rem; }
+
+  label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin-bottom: 6px;
+    letter-spacing: 0.01em;
+  }
+
+  input[type="text"],
+  input[type="email"] {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    color: var(--ink);
+    background: var(--surface);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+  input[type="text"]:focus,
+  input[type="email"]:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(91,75,245,0.12);
+    background: #fff;
+  }
+  input::placeholder { color: #BCBCC4; }
+
+  /* Divider */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 1.4rem 0;
+    color: var(--muted);
+    font-size: 0.73rem;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* Consent box */
+  .consent-box {
+    background: #fffbeb;
+    border: 1.5px solid #fde68a;
+    border-radius: 12px;
+    padding: 1rem 1.1rem;
+    margin-bottom: 1.2rem;
+  }
+  .consent-title {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #92400e;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 0.55rem;
+  }
+  .consent-text {
+    font-size: 0.82rem;
+    color: #78350f;
+    line-height: 1.65;
+    margin-bottom: 0.9rem;
+  }
+  .consent-check {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    cursor: pointer;
+  }
+  .consent-check input[type="checkbox"] {
+    width: 17px;
+    height: 17px;
+    flex-shrink: 0;
+    margin-top: 1px;
+    accent-color: var(--accent);
+    cursor: pointer;
+  }
+  .consent-check span {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--ink);
+    line-height: 1.5;
+  }
+
+  /* Upload area */
+  .upload-area {
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    padding: 1.4rem 1rem;
+    text-align: center;
+    position: relative;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .upload-area.enabled { cursor: pointer; }
+  .upload-area.enabled:hover, .upload-area.dragover {
+    border-color: var(--accent);
+    background: #f5f3ff;
+  }
+  .upload-area.disabled { opacity: 0.5; cursor: not-allowed; }
+  .upload-area input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .upload-area.disabled input[type="file"] { pointer-events: none; }
+
+  .upload-icon {
+    width: 40px; height: 40px;
+    background: #EDE9FE;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 0.7rem;
+  }
+  .upload-icon svg { width: 20px; height: 20px; stroke: var(--accent); fill: none; }
+  .upload-label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-bottom: 3px;
+  }
+  .upload-hint { font-size: 0.75rem; color: var(--muted); }
+
+  /* Preview */
+  #preview-wrap { display: none; margin-top: 1rem; position: relative; }
+  #preview-img {
+    width: 100%;
+    max-height: 220px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 1.5px solid var(--border);
+    display: block;
+  }
+  #remove-img {
+    position: absolute;
+    top: 8px; right: 8px;
+    width: 28px; height: 28px;
+    background: rgba(0,0,0,0.55);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  #file-name { margin-top: 6px; font-size: 0.75rem; color: var(--muted); text-align: center; }
+
+  #upload-status {
+    display: none;
+    font-size: 0.78rem;
+    text-align: center;
+    margin-top: 0.5rem;
+    color: var(--muted);
+  }
+  #upload-status.uploading { color: var(--accent); }
+  #upload-status.done      { color: var(--success); }
+  #upload-status.error     { color: #dc2626; }
+
+  .btn {
+    width: 100%;
+    padding: 13px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: background 0.2s, transform 0.1s;
+    letter-spacing: 0.01em;
+  }
+  .btn:hover  { background: #4a3ae0; }
+  .btn:active { transform: scale(0.98); }
+  .btn:disabled { background: #c4bef8; cursor: not-allowed; transform: none; }
+
+  .success-state { display: none; text-align: center; padding: 1rem 0; }
+  .success-icon {
+    width: 56px; height: 56px;
+    background: #DCFCE7;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 1rem;
+  }
+  .success-icon svg { width: 28px; height: 28px; stroke: var(--success); fill: none; }
+  .success-state h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 800;
+    margin-bottom: 0.4rem;
+  }
+  .success-state p { font-size: 0.88rem; color: var(--muted); }
+
+  .qr-section { margin-top: 2rem; padding-top: 1.8rem; border-top: 1px solid var(--border); }
+  .qr-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--muted);
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 1rem;
+  }
+  .qr-wrap { display: flex; justify-content: center; }
+  #qrcode canvas, #qrcode img {
+    border-radius: 12px;
+    border: 6px solid white;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+  }
+  .qr-hint { text-align: center; font-size: 0.75rem; color: var(--muted); margin-top: 0.8rem; }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <div class="brand">
+    <div class="brand-mark">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+      </svg>
+    </div>
+    <span class="brand-name">imistria</span>
+  </div>
+
+  <div class="card">
+    <span class="tag">Early Access</span>
+    <h1>Be first to experience imistria.</h1>
+    <p class="subtitle">Join the waitlist and share a handwriting sample to help us personalise your experience.</p>
+
+    <!-- Form -->
+    <div id="form-state">
+
+      <div class="field">
+        <label for="fullname">Full Name</label>
+        <input type="text" id="fullname" placeholder="e.g. Sidra Hanif" autocomplete="name" />
+      </div>
+      <div class="field">
+        <label for="affiliation">Affiliation</label>
+        <input type="text" id="affiliation" placeholder="e.g. CSUSM / Company name" />
+      </div>
+      <div class="field">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" placeholder="you@example.com" autocomplete="email" />
+      </div>
+
+      <div class="divider">Handwriting Sample</div>
+
+      <!-- Consent box -->
+      <div class="consent-box">
+        <p class="consent-title">Data Use Agreement</p>
+        <p class="consent-text">
+          Imistria will use your handwriting samples <strong>solely</strong> to generate
+          your personalised output and to improve the accuracy of our models.
+          Your samples will <strong>never</strong> be shared with or sold to third parties.
+        </p>
+        <label class="consent-check">
+          <input type="checkbox" id="consent" onchange="toggleUpload()" />
+          <span>I have read and agree to the data use terms above.</span>
+        </label>
+      </div>
+
+      <!-- Upload area (locked until consent) -->
+      <div class="field">
+        <label>
+          Upload Handwriting Photo
+          <span style="color:var(--muted);font-weight:400"> — optional</span>
+        </label>
+        <div class="upload-area disabled" id="upload-area">
+          <input type="file" id="imageFile" accept="image/*" capture="environment"
+                 disabled onchange="handleFileSelect(event)" />
+          <div class="upload-icon">
+            <svg viewBox="0 0 24 24" stroke-width="1.8" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"/>
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z"/>
+            </svg>
+          </div>
+          <p class="upload-label" id="upload-label">Take a photo or choose from gallery</p>
+          <p class="upload-hint" id="upload-hint">Agree to the terms above to enable upload</p>
+        </div>
+
+        <div id="preview-wrap">
+          <img id="preview-img" alt="Handwriting preview" />
+          <button id="remove-img" onclick="removeImage()" aria-label="Remove image">✕</button>
+          <p id="file-name"></p>
+        </div>
+        <p id="upload-status"></p>
+      </div>
+
+      <button class="btn" id="submitBtn" onclick="handleSubmit()">Request Early Access →</button>
+    </div>
+
+    <!-- Success -->
+    <div class="success-state" id="success-state">
+      <div class="success-icon">
+        <svg viewBox="0 0 24 24" stroke-width="2.5" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
+        </svg>
+      </div>
+      <h2>You're on the list!</h2>
+      <p>Thanks for signing up. We'll be in touch soon with your early access details.</p>
+    </div>
+
+    <!-- QR Code -->
+    <div class="qr-section">
+      <p class="qr-label">Share this form via QR code</p>
+      <div class="qr-wrap"><div id="qrcode"></div></div>
+      <p class="qr-hint">Scan to open the early access form on any device</p>
+    </div>
+  </div>
+
+</div>
+<script>
+  /* QR code */
+  window.addEventListener('load', () => {
+    new QRCode(document.getElementById('qrcode'), {
+      text: window.location.href,
+      width: 160, height: 160,
+      colorDark: '#0D0D0F', colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.H
+    });
+  });
+
+  /* ── Consent toggles upload area ── */
+  function toggleUpload() {
+    const agreed = document.getElementById('consent').checked;
+    const fileInput = document.getElementById('imageFile');
+    const area = document.getElementById('upload-area');
+    fileInput.disabled = !agreed;
+    area.classList.toggle('enabled', agreed);
+    area.classList.toggle('disabled', !agreed);
+    document.getElementById('upload-hint').textContent = agreed
+      ? 'JPG, PNG or HEIC · max 10 MB · good lighting helps'
+      : 'Agree to the terms above to enable upload';
+  }
+
+  /* ── File select & preview ── */
+  let selectedFile = null;
+
+  function handleFileSelect(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 10 * 1024 * 1024) {
+      alert('Please choose an image under 10 MB.');
+      e.target.value = '';
+      return;
+    }
+    selectedFile = file;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      document.getElementById('preview-img').src = ev.target.result;
+      document.getElementById('preview-wrap').style.display = 'block';
+      document.getElementById('file-name').textContent = file.name;
+      document.getElementById('upload-label').textContent = 'Image selected ✓';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function removeImage() {
+    selectedFile = null;
+    document.getElementById('imageFile').value = '';
+    document.getElementById('preview-wrap').style.display = 'none';
+    document.getElementById('upload-label').textContent = 'Take a photo or choose from gallery';
+  }
+
+  /* Drag-and-drop */
+  const area = document.getElementById('upload-area');
+  area.addEventListener('dragover', e => { e.preventDefault(); area.classList.add('dragover'); });
+  area.addEventListener('dragleave', () => area.classList.remove('dragover'));
+  area.addEventListener('drop', e => {
+    e.preventDefault();
+    area.classList.remove('dragover');
+    if (!document.getElementById('consent').checked) return;
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) {
+      try {
+        const dt = new DataTransfer();
+        dt.items.add(file);
+        document.getElementById('imageFile').files = dt.files;
+        handleFileSelect({ target: { files: dt.files } });
+      } catch(_) {}
+    }
+  });
+
+  /* ── Submit ──
+     Google Drive upload via Google Apps Script Web App.
+
+     ONE-TIME SETUP:
+     1. Go to script.google.com → New project
+     2. Paste the Apps Script below, then:
+        Deploy → New deployment → Web App
+        Execute as: Me | Who has access: Anyone
+     3. Copy the Web App URL into GOOGLE_SCRIPT_URL below.
+
+     ─── Apps Script (Code.gs) ──────────────────────────────────────────
+     function doPost(e) {
+       var data   = JSON.parse(e.postData.contents);
+       var folder = DriveApp.getFolderById('PASTE_YOUR_FOLDER_ID_HERE');
+       var blob   = Utilities.newBlob(
+         Utilities.base64Decode(data.imageBase64),
+         data.mimeType,
+         data.fileName
+       );
+       folder.createFile(blob);
+       return ContentService
+         .createTextOutput(JSON.stringify({ status: 'ok' }))
+         .setMimeType(ContentService.MimeType.JSON);
+     }
+     ────────────────────────────────────────────────────────────────── */
+  const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzyevtEDlxj4mHFiGidp_i5JFkHMAqvXDW3QLr7ioqIxvm9skGI5CJIinM-Zs1WuYlZ/exec';
+
+  async function handleSubmit() {
+    const name    = document.getElementById('fullname').value.trim();
+    const aff     = document.getElementById('affiliation').value.trim();
+    const email   = document.getElementById('email').value.trim();
+    const consent = document.getElementById('consent').checked;
+
+    if (!name)  { alert('Please enter your full name.'); return; }
+    if (!aff)   { alert('Please enter your affiliation.'); return; }
+    if (!email || !email.includes('@')) { alert('Please enter a valid email address.'); return; }
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.textContent = 'Submitting…';
+
+    /* Upload image to Google Drive if one was selected and consent given */
+    if (selectedFile && consent) {
+      const status = document.getElementById('upload-status');
+      status.style.display = 'block';
+      status.className = 'uploading';
+      status.textContent = '⏳ Uploading image to secure storage…';
+
+      try {
+        const base64 = await fileToBase64(selectedFile);
+        const payload = {
+          fileName:    `${name.replace(/\s+/g,'_')}_${Date.now()}_${selectedFile.name}`,
+          mimeType:    selectedFile.type,
+          imageBase64: base64.split(',')[1],
+          submittedBy: email
+        };
+
+        if (GOOGLE_SCRIPT_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL') {
+          const res = await fetch(GOOGLE_SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify(payload)
+          });
+          if (!res.ok) throw new Error('Upload failed');
+          status.className = 'done';
+          status.textContent = '✓ Image saved securely to Google Drive.';
+        } else {
+          /* Drive not yet wired up — store locally & log */
+          console.log('[imistria] Drive upload pending setup. File ready:', payload.fileName);
+          status.className = 'done';
+          status.textContent = '✓ Image received (Drive connection coming soon).';
+        }
+      } catch (err) {
+        console.error(err);
+        status.className = 'error';
+        status.textContent = '⚠️ Image upload failed — we\'ll follow up by email.';
+      }
+    }
+
+    setTimeout(() => {
+      document.getElementById('form-state').style.display   = 'none';
+      document.getElementById('success-state').style.display = 'block';
+    }, selectedFile ? 900 : 0);
+
+    console.log('[imistria] Submission:', { name, aff, email, hasImage: !!selectedFile });
+  }
+
+  function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const r = new FileReader();
+      r.onload  = () => resolve(r.result);
+      r.onerror = reject;
+      r.readAsDataURL(file);
+    });
+  }
+</script>
+</body>
+</html>
